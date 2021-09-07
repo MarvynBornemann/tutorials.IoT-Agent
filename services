@@ -155,6 +155,16 @@ displayServices () {
 	echo ""
 }
 
+backupGrafana () {
+	echo "Backup Grafana"
+	docker run -v grafana-db:/volume --rm --log-driver none loomchild/volume-backup backup - > backups/backup.tar.bz2
+}
+
+restoreGrafana () {
+	echo "Restore Grafana"
+	cat backups/backup.tar.bz2 | docker run -i -v grafana-db:/volume --rm loomchild/volume-backup restore -
+}
+
 command="$1"
 case "${command}" in
 	"help")
@@ -197,7 +207,19 @@ case "${command}" in
 		;;
 	"stop")
 		export $(cat .env | grep "#" -v)
+		backupGrafana
 		stoppingContainers
+		;;
+	"stop-backup")
+		export $(cat .env | grep "#" -v)
+		stoppingContainers
+		;;
+	"backup")
+		backupGrafana
+		;;
+	"restore")
+		docker volume create grafana-db
+		restoreGrafana
 		;;
 	"start")
 		export $(cat .env | grep "#" -v)
