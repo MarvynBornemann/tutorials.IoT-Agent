@@ -110,7 +110,7 @@ services:
       - IOTA_MQTT_KEEPALIVE=60
       - IOTA_MQTT_AVOID_LEADING_SLASH=0
       - IOTA_MQTT_CLIENT_ID=iotagent
-        healthcheck:
+    healthcheck:
       interval: 5s
 
 
