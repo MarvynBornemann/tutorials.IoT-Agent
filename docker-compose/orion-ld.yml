@@ -100,7 +100,7 @@ services:
       - IOTA_MQTT_HOST=mosquitto
       - IOTA_MQTT_PORT=1883
       - IOTA_MQTT_USERNAME=LegoDemonstrator
-      - IOTA_MQTT_PASSWORD=LegoDemonstrator1234
+      - IOTA_MQTT_PASSWORD=Lego12Demo34nstr56ator
       - IOTA_MQTT_REJECT_UNAUTHORIZED=true
       - IOTA_MQTT_PROTOCOL=mqtt
       - IOTA_MQTT_QOS=0
@@ -194,7 +194,10 @@ services:
     ports:
       - "${GRAFANA_PORT}:${GRAFANA_PORT}" # localhost:3000
     environment:
-      - GF_INSTALL_PLUGINS=https://github.com/orchestracities/grafana-map-plugin/archive/master.zip;grafana-map-plugin,grafana-clock-panel,grafana-worldmap-panel
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-worldmap-panel
+      - GF_AUTH_DISABLE_LOGIN_FORM=true
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_NAME=Main Org.
     volumes:
       - grafana-db:/var/lib/grafana
     networks:
