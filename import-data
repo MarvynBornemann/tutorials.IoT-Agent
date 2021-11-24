@@ -8,145 +8,322 @@ set -e
 
 echo -e "⏳ Loading context data in \033[1mNGSI-LD\033[0m format"
 echo -e "    - all entity data models are defined referencing the" 
-echo -e "      \033[1m"${TUTORIAL_DATA_MODELS_CONTEXT}"\033[0m JSON-LD context"
+echo -e "      \033[1m"${CONTEXT}"\033[0m JSON-LD context"
 
 #
-# Create four Store Entities in various locations across Berlin
+# Create Entities for the Lego Demonastrator
 #
-curl -s -o /dev/null -X POST 'http://'"${CONTEXT_BROKER}"'/ngsi-ld/v1/entityOperations/upsert' \
--H 'Content-Type: application/json' \
--H 'Link: <'"${TUTORIAL_DATA_MODELS_CONTEXT}"'>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
--H 'Accept: application/ld+json' \
---data-raw '[
-  {
-    "id": "urn:ngsi-ld:Building:farm001",
-    "type": "Building",
-    "category": {"type": "Property", "value": ["farm"]},
-    "address": {
-        "type": "Property",
-        "value": { "streetAddress": "Großer Stern 1", "addressRegion": "Berlin", "addressLocality": "Tiergarten", "postalCode": "10557"},
-        "verified": { "type": "Property", "value": true}
+
+#ESP8266 Devices
+curl --location --request POST 'http://iot-agent:4041/iot/devices' \
+--header 'fiware-service: openiot' \
+--header 'fiware-servicepath: /' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+  "devices": [
+    {
+      "device_id": "ESP8266_001",
+      "entity_name": "urn:ngsi-ld:Device:ESP8266_001",
+      "entity_type": "Device",
+      "protocol":"PDI-IoTA-JSON",
+      "transport":"MQTT",
+      "timezone": "Europe/Berlin"
     },
-    "location": {
-        "type": "GeoProperty",
-        "value": { "type": "Point", "coordinates": [13.3505, 52.5144]}
+        {
+      "device_id": "ESP8266_002",
+      "entity_name": "urn:ngsi-ld:Device:ESP8266_002",
+      "entity_type": "Device",
+      "protocol":"PDI-IoTA-JSON",
+      "transport":"MQTT",
+      "timezone": "Europe/Berlin"
     },
-    "name": {"type": "Property","value": "Victory Farm"},
-    "owner": {"type": "Relationship", "object": "urn:ngsi-ld:Person:person001"}
-  },
-  {
-    "id": "urn:ngsi-ld:Building:barn002",
-    "type": "Building",
-    "category": {"type": "Property", "value": ["barn"]},
-    "address": {
-        "type": "Property",
-        "value": { "streetAddress": "Straße des 17. Juni", "addressRegion": "Berlin", "addressLocality": "Tiergarten", "postalCode": "10557"},
-        "verified": { "type": "Property", "value": true}
-    },
-    "location": {
-        "type": "GeoProperty",
-        "value": { "type": "Point", "coordinates": [13.3698, 52.5163]}
-    },
-    "name": {"type": "Property","value": "Big Red Barn"},
-    "owner": {"type": "Relationship", "object": "urn:ngsi-ld:Person:person001"}
-  },
-  {
-    "id": "urn:ngsi-ld:Building:tower003",
-    "type": "Building",
-    "category": {"type": "Property", "value": ["water_tower"]},
-    "address": {
-        "type": "Property",
-        "value": { "streetAddress": "John-Foster-Dulles-Allee", "addressRegion": "Berlin", "addressLocality": "Tiergarten", "postalCode": "10557"},
-        "verified": { "type": "Property", "value": true}
-    },
-    "location": {
-        "type": "GeoProperty",
-        "value": { "type": "Point", "coordinates": [13.3598, 52.5165]}
-    },
-    "name": {"type": "Property","value": "Triton Tower"},
-    "owner": {"type": "Relationship", "object": "urn:ngsi-ld:Person:person001"}
-  },
-  {
-    "id": "urn:ngsi-ld:Building:farm002",
-    "type": "Building",
-    "category": {"type": "Property", "value": ["farm"]},
-    "address": {
-        "type": "Property",
-        "value": { "streetAddress": "Hardenbergplatz 8", "addressRegion": "Berlin", "addressLocality": "Tiergarten", "postalCode": "10787"},
-        "verified": { "type": "Property", "value": true}
-    },
-    "location": {
-        "type": "GeoProperty",
-        "value": { "type": "Point", "coordinates": [13.3127, 52.4893]}
-    },
-    "name": {"type": "Property","value": "Animal Farm"},
-    "owner": {"type": "Relationship", "object": "urn:ngsi-ld:Person:person002"}
-  },
-  {
-    "id": "urn:ngsi-ld:Person:person001",
-    "type": "Person",
-    "name": {"type": "Property","value": "Old MacDonald"},
-    "owns": {"type": "Relationship", "object": "urn:ngsi-ld:Building:farm001"},
-    "jobTitle": {"type": "Property","value": {
-        "inDefinedTermSet": "https://targetjobs.co.uk/careers-advice/job-descriptions",
-        "termCode": "277119-agricultural-manager-job-description",
-        "name": "Agricultural Manager",
-        "url": "https://targetjobs.co.uk/careers-advice/job-descriptions/277119-agricultural-manager-job-description"
+    {
+      "device_id": "temperature001",
+      "entity_name": "urn:ngsi-ld:Device:temperature001",
+      "entity_type": "Device",
+      "protocol":"PDI-IoTA-JSON",
+      "transport":"MQTT",
+      "timezone": "Europe/Berlin",
+      "attributes": [
+        {
+          "object_id": "temperature",
+          "name": "temperature",
+          "type": "Property",
+          "metadata": {
+            "unitCode": {
+              "type": "Text",
+              "value": "CEL"
+            }
+          }
+        },
+        {
+          "object_id": "humidity",
+          "name": "humidity",
+          "type": "Property",
+          "metadata": {
+            "unitCode": {
+              "type": "Text",
+              "value": "%"
+            }
+          }
+        },
+        {
+          "object_id": "heatIndex",
+          "name": "heatIndex",
+          "type": "Property",
+          "metadata": {
+            "unitCode": {
+              "type": "Text",
+              "value": "CEL"
+            }
+          }
         }
+      ],
+      "static_attributes": [
+        {
+          "name": "controlledAsset",
+          "type": "Relationship",
+          "value": "urn:ngsi-ld:Device:ESP8266_001"
+        }
+      ]
+    },
+    {
+      "device_id": "temperature002",
+      "entity_name": "urn:ngsi-ld:Device:temperature002",
+      "entity_type": "Device",
+      "protocol":"PDI-IoTA-JSON",
+      "transport":"MQTT",
+      "timezone": "Europe/Berlin",
+      "attributes": [
+        {
+          "object_id": "temperature",
+          "name": "temperature",
+          "type": "Property",
+          "metadata": {
+            "unitCode": {
+              "type": "Text",
+              "value": "CEL"
+            }
+          }
+        },
+        {
+          "object_id": "humidity",
+          "name": "humidity",
+          "type": "Property",
+          "metadata": {
+            "unitCode": {
+              "type": "Text",
+              "value": "%"
+            }
+          }
+        },
+        {
+          "object_id": "heatIndex",
+          "name": "heatIndex",
+          "type": "Property",
+          "metadata": {
+            "unitCode": {
+              "type": "Text",
+              "value": "CEL"
+            }
+          }
+        }
+      ],
+      "static_attributes": [
+        {
+          "name": "controlledAsset",
+          "type": "Relationship",
+          "value": "urn:ngsi-ld:Device:ESP8266_002"
+        }
+      ]
+    },
+    {
+      "device_id": "windmills001",
+      "entity_name": "urn:ngsi-ld:Device:windmills001",
+      "entity_type": "Device",
+      "protocol":"PDI-IoTA-JSON",
+      "transport":"MQTT",
+      "timezone": "Europe/Berlin",
+      "commands":[
+          {
+              "name":"on",
+              "type":"command"
+          },
+          {
+              "name":"off",
+              "type":"command"
+          }
+        ],
+      "static_attributes": [
+        {
+          "name": "controlledAsset",
+          "type": "Relationship",
+          "value": "urn:ngsi-ld:Device:ESP8266_001"
+        }
+      ]
     }
-  },
-  {
-    "id": "urn:ngsi-ld:Person:person002",
-    "type": "Person",
-    "gender": {"type": "Property","value": "male"},
-    "givenName": {"type": "Property","value": "Napoleon"},
-    "name": {"type": "Property","value": "Napoleon the Pig"},
-    "jobTitle": {"type": "Property","value": {
-        "inDefinedTermSet": "https://targetjobs.co.uk/careers-advice/job-descriptions",
-        "termCode": "277119-agricultural-manager-job-description",
-        "name": "Agricultural Manager",
-        "url": "https://targetjobs.co.uk/careers-advice/job-descriptions/277119-agricultural-manager-job-description"
-        }
+  ]
+}'
+
+sleep 0.5
+
+#ESP32 devices
+curl --location --request POST 'http://iot-agent:4041/iot/devices' \
+--header 'fiware-service: openiot' \
+--header 'fiware-servicepath: /' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+  "devices": [
+    {
+      "device_id": "ESP32_001",
+      "entity_name": "urn:ngsi-ld:Device:ESP32_001",
+      "entity_type": "Device",
+      "protocol":"PDI-IoTA-JSON",
+      "transport":"MQTT",
+      "timezone": "Europe/Berlin"
     },
-    "owns": {"type": "Relationship", "object": "urn:ngsi-ld:Building:farm002"},
-    "weight": {
-        "type": "Property","value": 270, "unitCode": "KGM"
+    {
+      "device_id": "LED002",
+      "entity_name": "urn:ngsi-ld:Device:LED002",
+      "entity_type": "Device",
+      "protocol":"PDI-IoTA-JSON",
+      "transport":"MQTT",
+      "timezone": "Europe/Berlin",
+      "commands":[
+          {
+              "name":"on",
+              "type":"command"
+          },
+          {
+              "name":"off",
+              "type":"command"
+          },
+          {
+              "name":"mode",
+              "type":"command"
+          }
+      ],
+      "static_attributes": [
+        {
+          "name": "controlledAsset",
+          "type": "Relationship",
+          "value": "urn:ngsi-ld:Device:ESP32_001"
+        }
+      ]
+    },
+    {
+      "device_id": "weight001",
+      "entity_name": "urn:ngsi-ld:Device:weight001",
+      "entity_type": "Device",
+      "protocol":"PDI-IoTA-JSON",
+      "transport":"MQTT",
+      "timezone": "Europe/Berlin",
+      "attributes": [
+        {
+          "object_id": "weight",
+          "name": "weight",
+          "type": "Number",
+          "metadata": {
+            "unitCode": {
+              "type": "Text",
+              "value": "t"
+            }
+          }
+        },
+        {
+          "object_id": "weightClass",
+          "name": "weightClass",
+          "type": "Property",
+          "metadata": {
+            "unitCode": {
+              "type": "Text",
+              "value": ""
+            }
+          }
+        },
+        {
+          "object_id": "price",
+          "name": "price",
+          "type": "Property",
+          "metadata": {
+            "unitCode": {
+              "type": "Text",
+              "value": "€/h"
+            }
+          }
+        }
+      ],
+      "static_attributes": [
+        {
+          "name": "controlledAsset",
+          "type": "Relationship",
+          "value": "urn:ngsi-ld:Device:ESP32_001"
+        }
+      ]
     }
-  },
-  {
-    "id": "urn:ngsi-ld:Person:person003",
-    "type": "Person",
-    "gender": {"type": "Property","value": "male"},
-    "givenName": {"type": "Property","value": "Squealer"},
-    "name": {"type": "Property","value": "Squealer the Pig"},
-    "jobTitle": {"type": "Property","value": {
-        "inDefinedTermSet": "https://targetjobs.co.uk/careers-advice/job-descriptions",
-        "termCode": "276387-broadcasting-presenter-job-description",
-        "name": "Broadcasting Presenter",
-        "url": "https://targetjobs.co.uk/careers-advice/job-descriptions/276387-broadcasting-presenter-job-description"
+  ]
+}'
+
+sleep 0.5
+
+#Create Service
+curl --location --request POST 'http://iot-agent:4041/iot/services' \
+--header 'fiware-service: openiot' \
+--header 'fiware-servicepath: /' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "services": [
+        {
+            "apikey": "idFZy8D9KzFko7db",
+            "cbroker": "http://orion:1026",
+            "entity_type": "Device",
+            "resource": ""
         }
-    },
-    "weight": {
-        "type": "Property","value": 230, "unitCode": "KGM"
-    }
-  },
-  {
-    "id": "urn:ngsi-ld:Person:person004",
-    "type": "Person",
-    "gender": {"type": "Property","value": "male"},
-    "givenName": {"type": "Property","value": "Snowball"},
-    "name": {"type": "Property","value": "Snowball the Pig"},
-    "jobTitle": {"type": "Property","value": {
-        "inDefinedTermSet": "https://targetjobs.co.uk/careers-advice/job-descriptions",
-        "termCode": "277089-agricultural-consultant-description",
-        "name": "Agricultural Consultant",
-        "url": "https://targetjobs.co.uk/careers-advice/job-descriptions/277089-agricultural-consultant"
-        }
-    },
-    "weight": {
-        "type": "Property","value": 250, "unitCode": "KGM"
+    ]
+}'
+
+sleep 5
+
+#subscripe to temperature
+curl --location --request POST 'http://orion:1026/ngsi-ld/v1/subscriptions/' \
+--header 'NGSILD-Tenant: openiot' \
+--header 'Content-Type: application/json' \
+--header 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+--data-raw '{
+  "description": "Notify me of all temperature, humidity and heatIndex changes",
+  "type": "Subscription",
+  "entities": [{"type": "Device"}],
+  "watchedAttributes": ["temperature", "humidity", "heatIndex"],
+  "notification": {
+    "attributes": ["temperature", "humidity", "heatIndex", "controlledAsset"],
+    "format": "normalized",
+    "endpoint": {
+      "uri": "http://quantumleap:8668/v2/notify",
+      "accept": "application/json"
     }
   }
-]'
+}'
 
-echo -e " \033[1;32mdone\033[0m"
+sleep 5
+
+#subscripe to weight
+curl --location --request POST 'http://orion:1026/ngsi-ld/v1/subscriptions/' \
+--header 'NGSILD-Tenant: openiot' \
+--header 'Content-Type: application/json' \
+--header 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+--data-raw '{
+  "description": "Notify me of all weight changes",
+  "type": "Subscription",
+  "entities": [{"type": "Device"}],
+  "watchedAttributes": ["weight", "weightClass", "price"],
+  "notification": {
+    "attributes": ["weight", "weightClass", "price", "controlledAsset"],
+    "format": "normalized",
+    "endpoint": {
+      "uri": "http://quantumleap:8668/v2/notify",
+      "accept": "application/json"
+    }
+  }
+}'
+
+echo -e " \033[1;32mLoading data is done\033[0m"

@@ -46,7 +46,7 @@ waitForOrion () {
 	while ! [ `docker inspect --format='{{.State.Health.Status}}' fiware-orion` == "healthy" ]
 	do
 		echo -e "\nContext Broker HTTP state: ${response} (waiting for 200)"
-		pause 6
+		pause 20
 		getHeartbeat "${ORION}"
 	done
 }
@@ -104,7 +104,8 @@ loadData () {
 	docker run --rm -v $(pwd)/import-data:/import-data \
 		--network fiware_default \
 		-e CONTEXT_BROKER=${CONTEXT_BROKER} \
-		-e TUTORIAL_DATA_MODELS_CONTEXT=${CONTEXT} \
+		-e CONTEXT=${CONTEXT} \
+		-e IOT_AGENT=${IOT_AGENT} \
 		--entrypoint /bin/ash curlimages/curl import-data
 }
 
@@ -205,12 +206,12 @@ case "${command}" in
 		loadData
 		waitForIoTAgent
 		;;
-	"stop")
+	"stop-backup")
 		export $(cat .env | grep "#" -v)
 		backupGrafana
 		stoppingContainers
 		;;
-	"stop-backup")
+	"stop")
 		export $(cat .env | grep "#" -v)
 		stoppingContainers
 		;;
