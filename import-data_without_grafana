@@ -1,0 +1,285 @@
+#!/bin/bash
+#
+#  curl commands to reload the data from the previous tutorial
+#
+#
+
+set -e
+
+echo -e "⏳ Loading context data in \033[1mNGSI-LD\033[0m format"
+echo -e "    - all entity data models are defined referencing the" 
+echo -e "      \033[1m"${CONTEXT}"\033[0m JSON-LD context"
+
+#
+# Create Entities for the Lego Demonastrator
+#
+
+#ESP8266 Devices
+curl --location --request POST 'http://iot-agent:4041/iot/devices' \
+--header 'fiware-service: openiot' \
+--header 'fiware-servicepath: /' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+  "devices": [
+    {
+      "device_id": "ESP8266_001",
+      "entity_name": "urn:ngsi-ld:Device:ESP8266_001",
+      "entity_type": "Device",
+      "protocol":"PDI-IoTA-JSON",
+      "transport":"MQTT",
+      "timezone": "Europe/Berlin"
+    },
+        {
+      "device_id": "ESP8266_002",
+      "entity_name": "urn:ngsi-ld:Device:ESP8266_002",
+      "entity_type": "Device",
+      "protocol":"PDI-IoTA-JSON",
+      "transport":"MQTT",
+      "timezone": "Europe/Berlin"
+    },
+    {
+      "device_id": "temperature001",
+      "entity_name": "urn:ngsi-ld:Device:temperature001",
+      "entity_type": "Device",
+      "protocol":"PDI-IoTA-JSON",
+      "transport":"MQTT",
+      "timezone": "Europe/Berlin",
+      "attributes": [
+        {
+          "object_id": "temperature",
+          "name": "temperature",
+          "type": "Property",
+          "metadata": {
+            "unitCode": {
+              "type": "Text",
+              "value": "CEL"
+            }
+          }
+        },
+        {
+          "object_id": "humidity",
+          "name": "humidity",
+          "type": "Property",
+          "metadata": {
+            "unitCode": {
+              "type": "Text",
+              "value": "%"
+            }
+          }
+        },
+        {
+          "object_id": "heatIndex",
+          "name": "heatIndex",
+          "type": "Property",
+          "metadata": {
+            "unitCode": {
+              "type": "Text",
+              "value": "CEL"
+            }
+          }
+        }
+      ],
+      "static_attributes": [
+        {
+          "name": "controlledAsset",
+          "type": "Relationship",
+          "value": "urn:ngsi-ld:Device:ESP8266_001"
+        }
+      ]
+    },
+    {
+      "device_id": "temperature002",
+      "entity_name": "urn:ngsi-ld:Device:temperature002",
+      "entity_type": "Device",
+      "protocol":"PDI-IoTA-JSON",
+      "transport":"MQTT",
+      "timezone": "Europe/Berlin",
+      "attributes": [
+        {
+          "object_id": "temperature",
+          "name": "temperature",
+          "type": "Property",
+          "metadata": {
+            "unitCode": {
+              "type": "Text",
+              "value": "CEL"
+            }
+          }
+        },
+        {
+          "object_id": "humidity",
+          "name": "humidity",
+          "type": "Property",
+          "metadata": {
+            "unitCode": {
+              "type": "Text",
+              "value": "%"
+            }
+          }
+        },
+        {
+          "object_id": "heatIndex",
+          "name": "heatIndex",
+          "type": "Property",
+          "metadata": {
+            "unitCode": {
+              "type": "Text",
+              "value": "CEL"
+            }
+          }
+        }
+      ],
+      "static_attributes": [
+        {
+          "name": "controlledAsset",
+          "type": "Relationship",
+          "value": "urn:ngsi-ld:Device:ESP8266_002"
+        }
+      ]
+    },
+    {
+      "device_id": "windmills001",
+      "entity_name": "urn:ngsi-ld:Device:windmills001",
+      "entity_type": "Device",
+      "protocol":"PDI-IoTA-JSON",
+      "transport":"MQTT",
+      "timezone": "Europe/Berlin",
+      "commands":[
+          {
+              "name":"on",
+              "type":"command"
+          },
+          {
+              "name":"off",
+              "type":"command"
+          }
+        ],
+      "static_attributes": [
+        {
+          "name": "controlledAsset",
+          "type": "Relationship",
+          "value": "urn:ngsi-ld:Device:ESP8266_001"
+        }
+      ]
+    }
+  ]
+}'
+
+sleep 0.5
+
+#ESP32 devices
+curl --location --request POST 'http://iot-agent:4041/iot/devices' \
+--header 'fiware-service: openiot' \
+--header 'fiware-servicepath: /' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+  "devices": [
+    {
+      "device_id": "ESP32_001",
+      "entity_name": "urn:ngsi-ld:Device:ESP32_001",
+      "entity_type": "Device",
+      "protocol":"PDI-IoTA-JSON",
+      "transport":"MQTT",
+      "timezone": "Europe/Berlin"
+    },
+    {
+      "device_id": "LED002",
+      "entity_name": "urn:ngsi-ld:Device:LED002",
+      "entity_type": "Device",
+      "protocol":"PDI-IoTA-JSON",
+      "transport":"MQTT",
+      "timezone": "Europe/Berlin",
+      "commands":[
+          {
+              "name":"on",
+              "type":"command"
+          },
+          {
+              "name":"off",
+              "type":"command"
+          },
+          {
+              "name":"mode",
+              "type":"command"
+          }
+      ],
+      "static_attributes": [
+        {
+          "name": "controlledAsset",
+          "type": "Relationship",
+          "value": "urn:ngsi-ld:Device:ESP32_001"
+        }
+      ]
+    },
+    {
+      "device_id": "weight001",
+      "entity_name": "urn:ngsi-ld:Device:weight001",
+      "entity_type": "Device",
+      "protocol":"PDI-IoTA-JSON",
+      "transport":"MQTT",
+      "timezone": "Europe/Berlin",
+      "attributes": [
+        {
+          "object_id": "weight",
+          "name": "weight",
+          "type": "Number",
+          "metadata": {
+            "unitCode": {
+              "type": "Text",
+              "value": "t"
+            }
+          }
+        },
+        {
+          "object_id": "weightClass",
+          "name": "weightClass",
+          "type": "Property",
+          "metadata": {
+            "unitCode": {
+              "type": "Text",
+              "value": ""
+            }
+          }
+        },
+        {
+          "object_id": "price",
+          "name": "price",
+          "type": "Property",
+          "metadata": {
+            "unitCode": {
+              "type": "Text",
+              "value": "€/h"
+            }
+          }
+        }
+      ],
+      "static_attributes": [
+        {
+          "name": "controlledAsset",
+          "type": "Relationship",
+          "value": "urn:ngsi-ld:Device:ESP32_001"
+        }
+      ]
+    }
+  ]
+}'
+
+sleep 0.5
+
+#Create Service
+curl --location --request POST 'http://iot-agent:4041/iot/services' \
+--header 'fiware-service: openiot' \
+--header 'fiware-servicepath: /' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "services": [
+        {
+            "apikey": "idFZy8D9KzFko7db",
+            "cbroker": "http://orion:1026",
+            "entity_type": "Device",
+            "resource": ""
+        }
+    ]
+}'
+
+echo -e " \033[1;32mData is loaded !\033[0m"
