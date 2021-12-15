@@ -30,7 +30,7 @@ services:
 
   # Orion is the context broker
   orion:
-    image: fiware/orion-ld:${ORION_LD_VERSION}
+    image: fisuda/orion-ld:latest
     hostname: orion
     container_name: fiware-orion
     depends_on:
@@ -48,7 +48,7 @@ services:
   
   # IoT-Agent is configured for the JSON Protocol
   iot-agent:
-    image: fiware/iotagent-json:${JSON_VERSION}
+    image: letsfiware/iotagent-json:1.17.0
     hostname: iot-agent
     container_name: fiware-iot-agent
     depends_on:
