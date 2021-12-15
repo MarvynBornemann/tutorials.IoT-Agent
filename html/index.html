@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>
+            Smart_World_by_FIWARE
+        </title>
+    </head>
+    <body>
+        <button onclick="windmills_off()">
+            Windmills off
+        </button>
+        <button onclick="windmills_on()">
+            Windmills on
+        </button>
+
+        <button onclick="windmills_get()">
+            Windmills get
+        </button>
+
+        <p onclick="myFunction(this, 'red')">Click me to change my text color.</p>
+
+        <script>
+            function myFunction(elmnt,clr) {
+                elmnt.style.color = clr;
+            }
+        </script>
+
+        <script>
+            function windmills_off(){
+                var data = JSON.stringify({
+                "type": "Property",
+                "value": ""
+                });
+        
+                var xhr = new XMLHttpRequest();
+                //xhr.withCredentials = true;
+        
+                xhr.addEventListener("readystatechange", function() {
+                if(this.readyState === 4) {
+                    console.log(this.responseText);
+                }
+                });
+        
+                xhr.open("PATCH", "http://192.168.178.58:5000/http://192.168.178.58:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Device:windmills001/attrs/off");
+                xhr.setRequestHeader("NGSILD-Tenant", "openiot");
+                xhr.setRequestHeader("Content-Type", "application/json");
+                xhr.setRequestHeader("Link", "<http://context/ngsi-context.jsonld>; rel=\"http://www.w3.org/ns/json-ld#context\"; type=\"application/ld+json\"");
+        
+                xhr.send(data);
+            }
+        </script>
+        <script>
+            function windmills_on(){
+                var data = JSON.stringify({
+                "type": "Property",
+                "value": ""
+                });
+        
+                var xhr = new XMLHttpRequest();
+                //xhr.withCredentials = true;
+        
+                xhr.addEventListener("readystatechange", function() {
+                if(this.readyState === 4) {
+                    console.log(this.responseText);
+                }
+                });
+        
+                xhr.open("PATCH", "http://192.168.178.58:5000/http://192.168.178.58:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Device:windmills001/attrs/on");
+                xhr.setRequestHeader("NGSILD-Tenant", "openiot");
+                xhr.setRequestHeader("Content-Type", "application/json");
+                xhr.setRequestHeader("Link", "<http://context/ngsi-context.jsonld>; rel=\"http://www.w3.org/ns/json-ld#context\"; type=\"application/ld+json\"");
+        
+                xhr.send(data);
+            }
+        
+        </script>
+        <script>
+            function windmills_get(){
+                var xhr = new XMLHttpRequest();
+                //xhr.withCredentials = true;
+
+                xhr.addEventListener("readystatechange", function() {
+                if(this.readyState === 4) {
+                    console.log(this.responseText);
+                }
+                });
+
+                xhr.open("GET", "http://192.168.178.58:5000/http://192.168.178.58:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Device:windmills001");
+                xhr.setRequestHeader("NGSILD-Tenant", "openiot");
+                xhr.setRequestHeader("Content-Type", "application/json");
+                xhr.setRequestHeader("Link", "<http://context/ngsi-context.jsonld>; rel=\"http://www.w3.org/ns/json-ld#context\"; type=\"application/ld+json\"");
+
+                xhr.send();
+            }
+        
+        </script>
+    </body>
+</html>

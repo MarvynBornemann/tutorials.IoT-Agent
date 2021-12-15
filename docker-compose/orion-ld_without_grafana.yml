@@ -41,7 +41,7 @@ services:
       - "${ORION_LD_PORT}"
     ports:
       - "${ORION_LD_PORT}:${ORION_LD_PORT}" # localhost:1026
-    command: -dbhost mongo-db -logLevel DEBUG -forwarding
+    command: -dbhost mongo-db -logLevel DEBUG -forwarding #-corsOrigin _ALL
     healthcheck:
       test: curl --fail -s http://orion:${ORION_LD_PORT}/version || exit 1
       interval: 5s
@@ -119,6 +119,7 @@ services:
     image: eclipse-mosquitto:1.6.14
     hostname: mosquitto
     container_name: mosquitto
+    restart: always
     expose:
       - "${MOSQUITTO_PORT}"
       - "9001"
@@ -130,6 +131,24 @@ services:
       - ../mosquitto/mosquitto.passwd:/mosquitto/config/mosquitto.passwd
     networks:
       - default
+
+  # HTML Server
+  nginx:
+    image: nginx:latest
+    restart: always
+    ports:
+      - 8080:80
+    volumes:
+      - ../html/index.html:/usr/share/nginx/html/index.html
+  
+  # CORS Proxy Server
+  cors-anywhere:
+    image: sourabh385/cors-anywhere:latest
+    restart: always
+    ports:
+      - 5000:5000
+    environment: 
+      - CORSANYWHERE_WHITELIST=http://192.168.178.75:8080,http://192.168.178.58:8080
 
 networks:
   default:
