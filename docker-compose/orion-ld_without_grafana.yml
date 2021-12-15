@@ -143,10 +143,10 @@ services:
   
   # CORS Proxy Server
   cors-anywhere:
-    image: sourabh385/cors-anywhere:latest
+    image: 7a6163/cors-anywhere:latest
     restart: always
     ports:
-      - 5000:5000
+      - 5000:8080
     environment: 
       - CORSANYWHERE_WHITELIST=http://192.168.178.75:8080,http://192.168.178.58:8080
 
