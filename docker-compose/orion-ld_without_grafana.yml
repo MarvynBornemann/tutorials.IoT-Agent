@@ -30,7 +30,7 @@ services:
 
   # Orion is the context broker
   orion:
-    image: letsfiware/orion-ld:latest
+    image: orion-ld:latest
     hostname: orion
     container_name: fiware-orion
     depends_on:
