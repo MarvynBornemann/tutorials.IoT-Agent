@@ -6,25 +6,46 @@
         </title>
     </head>
     <body>
-        <button onclick="windmills_off()">
-            Windmills off
-        </button>
-        <button onclick="windmills_on()">
-            Windmills on
-        </button>
-
-        <button onclick="windmills_get()">
-            Windmills get
-        </button>
-
-        <p onclick="myFunction(this, 'red')">Click me to change my text color.</p>
-
-        <script>
-            function myFunction(elmnt,clr) {
-                elmnt.style.color = clr;
+        <style>
+            .center {
+              margin: 0;
+              position: absolute;
+              top: 50%;
+              left: 50%;
+              -ms-transform: translate(-50%, -50%);
+              transform: translate(-50%, -50%);
             }
-        </script>
+            tr.spaceUnder>td {
+                padding-bottom: 2em;
+            }
+        </style>
 
+        <div class="center">
+            <table style="width:100%">
+                <tr class="spaceUnder">
+                    <td>
+                        <button onclick="windmills_off()">
+                            Windmills off
+                        </button>
+                    </td>
+                </tr>
+                <tr class="spaceUnder">
+                    <td>
+                        <button onclick="windmills_on()">
+                            Windmills on
+                        </button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <button onclick="windmills_get()">
+                            Windmills get
+                        </button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    
         <script>
             function windmills_off(){
                 var data = JSON.stringify({
