@@ -41,7 +41,7 @@
                 }
                 });
         
-                xhr.open("PATCH", "http://192.168.178.58:5000/http://192.168.178.58:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Device:windmills001/attrs/off");
+                xhr.open("PATCH", "http://192.168.1.100:5000/http://192.168.1.100:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Device:windmills001/attrs/off");
                 xhr.setRequestHeader("NGSILD-Tenant", "openiot");
                 xhr.setRequestHeader("Content-Type", "application/json");
                 xhr.setRequestHeader("Link", "<http://context/ngsi-context.jsonld>; rel=\"http://www.w3.org/ns/json-ld#context\"; type=\"application/ld+json\"");
@@ -65,7 +65,7 @@
                 }
                 });
         
-                xhr.open("PATCH", "http://192.168.178.58:5000/http://192.168.178.58:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Device:windmills001/attrs/on");
+                xhr.open("PATCH", "http://192.168.1.100:5000/http://192.168.1.100:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Device:windmills001/attrs/on");
                 xhr.setRequestHeader("NGSILD-Tenant", "openiot");
                 xhr.setRequestHeader("Content-Type", "application/json");
                 xhr.setRequestHeader("Link", "<http://context/ngsi-context.jsonld>; rel=\"http://www.w3.org/ns/json-ld#context\"; type=\"application/ld+json\"");
@@ -85,7 +85,7 @@
                 }
                 });
 
-                xhr.open("GET", "http://192.168.178.58:5000/http://192.168.178.58:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Device:windmills001");
+                xhr.open("GET", "http://192.168.1.100:5000/http://192.168.1.100:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Device:windmills001");
                 xhr.setRequestHeader("NGSILD-Tenant", "openiot");
                 xhr.setRequestHeader("Content-Type", "application/json");
                 xhr.setRequestHeader("Link", "<http://context/ngsi-context.jsonld>; rel=\"http://www.w3.org/ns/json-ld#context\"; type=\"application/ld+json\"");
