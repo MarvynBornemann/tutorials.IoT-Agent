@@ -51,6 +51,7 @@ services:
     image: orchestracities/quantumleap:${QUANTUMLEAP_VERSION}
     hostname: quantumleap
     container_name: fiware-quantumleap
+    restart: always
     depends_on:
       - crate-db
       - redis-db
@@ -139,6 +140,7 @@ services:
     image: eclipse-mosquitto:1.6.14
     hostname: mosquitto
     container_name: mosquitto
+    restart: always
     expose:
       - "${MOSQUITTO_PORT}"
       - "9001"
@@ -155,6 +157,7 @@ services:
     image: redis:${REDIS_VERSION}
     hostname: redis-db
     container_name: db-redis
+    restart: always
     networks:
       - default
     ports:
@@ -171,6 +174,7 @@ services:
     image: crate:${CRATE_VERSION}
     hostname: crate-db
     container_name: db-crate
+    restart: always
     ports:
       # Admin UI
       - "4200:4200"
@@ -185,6 +189,7 @@ services:
   # Dashboard
   grafana:
     image: grafana/grafana-enterprise:8.1.2
+    restart: always
     hostname: grafana
     container_name: grafana
     depends_on:
@@ -203,6 +208,30 @@ services:
     networks:
       - default
 
+  wordpress:
+    image: wordpress
+    restart: always
+    ports:
+      - 8080:80
+    environment:
+      WORDPRESS_DB_HOST: wordpress-db
+      WORDPRESS_DB_USER: WordpressLego
+      WORDPRESS_DB_PASSWORD: WordpressLego1234
+      WORDPRESS_DB_NAME: wordpressdb
+    volumes:
+      - wordpress:/var/www/html
+
+  wordpress-db:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_DATABASE: wordpressdb
+      MYSQL_USER: WordpressLego
+      MYSQL_PASSWORD: WordpressLego1234
+      MYSQL_RANDOM_ROOT_PASSWORD: '1'
+    volumes:
+      - wordpress-db:/var/lib/mysql
+
 
 networks:
   default:
@@ -216,3 +245,5 @@ volumes:
   redis-db: ~
   grafana-db:
     external: true
+  wordpress: ~
+  wordpress-db: ~
