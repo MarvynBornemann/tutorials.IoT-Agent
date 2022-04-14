@@ -208,30 +208,6 @@ services:
     networks:
       - default
 
-  wordpress:
-    image: wordpress
-    restart: always
-    ports:
-      - 8080:80
-    environment:
-      WORDPRESS_DB_HOST: wordpress-db
-      WORDPRESS_DB_USER: WordpressLego
-      WORDPRESS_DB_PASSWORD: WordpressLego1234
-      WORDPRESS_DB_NAME: wordpressdb
-    volumes:
-      - wordpress:/var/www/html
-
-  wordpress-db:
-    image: mysql:5.7
-    restart: always
-    environment:
-      MYSQL_DATABASE: wordpressdb
-      MYSQL_USER: WordpressLego
-      MYSQL_PASSWORD: WordpressLego1234
-      MYSQL_RANDOM_ROOT_PASSWORD: '1'
-    volumes:
-      - wordpress-db:/var/lib/mysql
-
 
 networks:
   default:
@@ -245,5 +221,3 @@ volumes:
   redis-db: ~
   grafana-db:
     external: true
-  wordpress: ~
-  wordpress-db: ~
