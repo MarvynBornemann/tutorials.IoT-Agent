@@ -284,7 +284,7 @@ curl --location --request POST 'http://iot-agent:4041/iot/services' \
 
 sleep 5
 
-#subscripe to temperature
+#subscribe to temperature
 curl --location --request POST 'http://orion:1026/ngsi-ld/v1/subscriptions/' \
 --header 'NGSILD-Tenant: openiot' \
 --header 'Content-Type: application/json' \
@@ -306,7 +306,7 @@ curl --location --request POST 'http://orion:1026/ngsi-ld/v1/subscriptions/' \
 
 sleep 5
 
-#subscripe to weight
+#subscribe to weight
 curl --location --request POST 'http://orion:1026/ngsi-ld/v1/subscriptions/' \
 --header 'NGSILD-Tenant: openiot' \
 --header 'Content-Type: application/json' \
