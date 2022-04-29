@@ -15,7 +15,7 @@ echo -e "      \033[1m"${CONTEXT}"\033[0m JSON-LD context"
 #
 
 #Add moduls
-curl --location --request POST 'http://localhost:1026/ngsi-ld/v1/entityOperations/create' \
+curl --location --request POST 'http://orion:1026/ngsi-ld/v1/entityOperations/create' \
 --header 'NGSILD-Tenant: openiot' \
 --header 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 --header 'Content-Type: application/json' \
@@ -82,7 +82,7 @@ curl --location --request POST 'http://localhost:1026/ngsi-ld/v1/entityOperation
 sleep 0.5
 
 #Register Harbour
-curl --location --request POST 'http://localhost:4041/iot/devices' \
+curl --location --request POST 'http://iot-agent:4041/iot/devices' \
 --header 'fiware-service: openiot' \
 --header 'fiware-servicepath: /' \
 --header 'Content-Type: application/json' \
@@ -184,7 +184,7 @@ curl --location --request POST 'http://localhost:4041/iot/devices' \
 sleep 0.5
 
 #Register Mobility_Hub
-curl --location --request POST 'http://localhost:4041/iot/devices' \
+curl --location --request POST 'http://iot-agent:4041/iot/devices' \
 --header 'fiware-service: openiot' \
 --header 'fiware-servicepath: /' \
 --header 'Content-Type: application/json' \
@@ -459,7 +459,7 @@ curl --location --request POST 'http://localhost:4041/iot/devices' \
 sleep 0.5
 
 #Register Basis
-curl --location --request POST 'http://localhost:4041/iot/devices' \
+curl --location --request POST 'http://iot-agent:4041/iot/devices' \
 --header 'fiware-service: openiot' \
 --header 'fiware-servicepath: /' \
 --header 'Content-Type: application/json' \
@@ -565,7 +565,7 @@ curl --location --request POST 'http://localhost:4041/iot/devices' \
 sleep 0.5
 
 #Register Impress
-curl --location --request POST 'http://localhost:4041/iot/devices' \
+curl --location --request POST 'http://iot-agent:4041/iot/devices' \
 --header 'fiware-service: openiot' \
 --header 'fiware-servicepath: /' \
 --header 'Content-Type: application/json' \
@@ -656,7 +656,7 @@ curl --location --request POST 'http://localhost:4041/iot/devices' \
 sleep 0.5
 
 #Register KI_Marketplace
-curl --location --request POST 'http://localhost:4041/iot/devices' \
+curl --location --request POST 'http://iot-agent:4041/iot/devices' \
 --header 'fiware-service: openiot' \
 --header 'fiware-servicepath: /' \
 --header 'Content-Type: application/json' \
@@ -697,7 +697,7 @@ curl --location --request POST 'http://localhost:4041/iot/devices' \
 sleep 0.5
 
 #Register Production_Claas
-curl --location --request POST 'http://localhost:4041/iot/devices' \
+curl --location --request POST 'http://iot-agent:4041/iot/devices' \
 --header 'fiware-service: openiot' \
 --header 'fiware-servicepath: /' \
 --header 'Content-Type: application/json' \
@@ -738,7 +738,7 @@ curl --location --request POST 'http://localhost:4041/iot/devices' \
 sleep 0.5
 
 #Register Wind_Energy
-curl --location --request POST 'http://localhost:4041/iot/devices' \
+curl --location --request POST 'http://iot-agent:4041/iot/devices' \
 --header 'fiware-service: openiot' \
 --header 'fiware-servicepath: /' \
 --header 'Content-Type: application/json' \
@@ -833,7 +833,7 @@ curl --location --request POST 'http://localhost:4041/iot/devices' \
 sleep 0.5
 
 #Register Dokk1
-curl --location --request POST 'http://localhost:4041/iot/devices' \
+curl --location --request POST 'http://iot-agent:4041/iot/devices' \
 --header 'fiware-service: openiot' \
 --header 'fiware-servicepath: /' \
 --header 'Content-Type: application/json' \
@@ -883,7 +883,7 @@ curl --location --request POST 'http://localhost:4041/iot/devices' \
 sleep 0.5
 
 #Register Services
-curl --location --request POST 'http://localhost:4041/iot/services' \
+curl --location --request POST 'http://iot-agent:4041/iot/services' \
 --header 'fiware-service: openiot' \
 --header 'fiware-servicepath: /' \
 --header 'Content-Type: application/json' \
@@ -903,7 +903,7 @@ sleep 5
 #----------------Subscriptions-------------------------------------------------------
 
 #Impress (weight)
-curl --location --request POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
+curl --location --request POST 'http://orion:1026/ngsi-ld/v1/subscriptions/' \
 --header 'NGSILD-Tenant: openiot' \
 --header 'Content-Type: application/json' \
 --header 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
@@ -925,7 +925,7 @@ curl --location --request POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/'
 sleep 0.5
 
 #ParkingSpot
-curl --location --request POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
+curl --location --request POST 'http://orion:1026/ngsi-ld/v1/subscriptions/' \
 --header 'NGSILD-Tenant: openiot' \
 --header 'Content-Type: application/json' \
 --header 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
@@ -947,7 +947,7 @@ curl --location --request POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/'
 sleep 0.5
 
 #OffStreetParking
-curl --location --request POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
+curl --location --request POST 'http://orion:1026/ngsi-ld/v1/subscriptions/' \
 --header 'NGSILD-Tenant: openiot' \
 --header 'Content-Type: application/json' \
 --header 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
@@ -969,7 +969,7 @@ curl --location --request POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/'
 sleep 0.5
 
 #ElectricVehicleChargingStation
-curl --location --request POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
+curl --location --request POST 'http://orion:1026/ngsi-ld/v1/subscriptions/' \
 --header 'NGSILD-Tenant: openiot' \
 --header 'Content-Type: application/json' \
 --header 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
@@ -991,7 +991,7 @@ curl --location --request POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/'
 sleep 0.5
 
 #GreenEnergyGenerator
-curl --location --request POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
+curl --location --request POST 'http://orion:1026/ngsi-ld/v1/subscriptions/' \
 --header 'NGSILD-Tenant: openiot' \
 --header 'Content-Type: application/json' \
 --header 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
@@ -1013,7 +1013,7 @@ curl --location --request POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/'
 sleep 0.5
 
 #EnergyConsumer
-curl --location --request POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
+curl --location --request POST 'http://orion:1026/ngsi-ld/v1/subscriptions/' \
 --header 'NGSILD-Tenant: openiot' \
 --header 'Content-Type: application/json' \
 --header 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
@@ -1035,7 +1035,7 @@ curl --location --request POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/'
 sleep 0.5
 
 #WeatherObserved
-curl --location --request POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
+curl --location --request POST 'http://orion:1026/ngsi-ld/v1/subscriptions/' \
 --header 'NGSILD-Tenant: openiot' \
 --header 'Content-Type: application/json' \
 --header 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
