@@ -859,7 +859,7 @@ curl --location --request POST 'http://iot-agent:4041/iot/devices' \
                 {
                     "name": "totalSpotNumber",
                     "type": "Property",
-                    "value": "1000"
+                    "value": 1000
                 },
                 {
                     "name": "category",
