@@ -431,6 +431,27 @@ curl --location --request POST 'http://localhost:4041/iot/devices' \
                     "value": "urn:ngsi-ld:Building:Mobility_Hub"
                 }
             ]
+        },
+        {
+            "device_id": "particulateMatter001",
+            "entity_name": "urn:ngsi-ld:Device:particulateMatter001",
+            "entity_type": "Device",
+            "protocol":"PDI-IoTA-JSON",
+            "transport":"MQTT",
+            "timezone": "Europe/Berlin",
+            "commands":[
+                {
+                    "name":"level",
+                    "type":"command"
+                }
+            ],
+            "static_attributes": [
+                {
+                    "name": "controlledAsset",
+                    "type": "Relationship",
+                    "value": "urn:ngsi-ld:Building:Mobility_Hub"
+                }
+            ]
         }
     ]
 }'
@@ -811,6 +832,56 @@ curl --location --request POST 'http://localhost:4041/iot/devices' \
 
 sleep 0.5
 
+#Register Dokk1
+curl --location --request POST 'http://localhost:4041/iot/devices' \
+--header 'fiware-service: openiot' \
+--header 'fiware-servicepath: /' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "devices": [
+        {
+            "device_id": "OffStreetParking:Dokk1:1",
+            "entity_name": "urn:ngsi-ld:OffStreetParking:Dokk1:1",
+            "entity_type": "OffStreetParking",
+            "attributes": [
+                {
+                    "object_id": "availableSpotNumber",
+                    "name": "availableSpotNumber",
+                    "type": "Number"
+                },
+                {
+                    "object_id": "occupiedSpotNumber",
+                    "name": "occupiedSpotNumber",
+                    "type": "Number"
+                }
+            ],
+            "static_attributes": [
+                {
+                    "name": "totalSpotNumber",
+                    "type": "Property",
+                    "value": "1000"
+                },
+                {
+                    "name": "category",
+                    "type": "Property",
+                    "value": [
+                        "parkingGarage",
+                        "public",
+                        "underground"
+                    ]
+                },
+                {
+                    "name": "controlledAsset",
+                    "type": "Relationship",
+                    "value": "urn:ngsi-ld:Building:Dokk1"
+                }
+            ]
+        }
+    ]
+}'
+
+sleep 0.5
+
 #Register Services
 curl --location --request POST 'http://localhost:4041/iot/services' \
 --header 'fiware-service: openiot' \
@@ -829,7 +900,158 @@ curl --location --request POST 'http://localhost:4041/iot/services' \
 
 sleep 5
 
-#Subscriptions
+#----------------Subscriptions-------------------------------------------------------
 
+#Impress (weight)
+curl --location --request POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
+--header 'NGSILD-Tenant: openiot' \
+--header 'Content-Type: application/json' \
+--header 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+--data-raw '{
+  "description": "Notify me of all weight changes",
+  "type": "Subscription",
+  "entities": [{"type": "Device"}],
+  "watchedAttributes": ["weight"],
+  "notification": {
+    "attributes": ["weight", "weightClass", "price"],
+    "format": "normalized",
+    "endpoint": {
+      "uri": "http://quantumleap:8668/v2/notify",
+      "accept": "application/json"
+    }
+  }
+}'
+
+sleep 0.5
+
+#ParkingSpot
+curl --location --request POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
+--header 'NGSILD-Tenant: openiot' \
+--header 'Content-Type: application/json' \
+--header 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+--data-raw '{
+  "description": "Notify me if status of ParkingSpot has changed",
+  "type": "Subscription",
+  "entities": [{"type": "ParkingSpot"}],
+  "watchedAttributes": ["status"],
+  "notification": {
+    "attributes": ["status"],
+    "format": "normalized",
+    "endpoint": {
+      "uri": "http://quantumleap:8668/v2/notify",
+      "accept": "application/json"
+    }
+  }
+}'
+
+sleep 0.5
+
+#OffStreetParking
+curl --location --request POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
+--header 'NGSILD-Tenant: openiot' \
+--header 'Content-Type: application/json' \
+--header 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+--data-raw '{
+  "description": "Notify me if availableSpotNumber of OffStreetParking has changed",
+  "type": "Subscription",
+  "entities": [{"type": "OffStreetParking"}],
+  "watchedAttributes": ["availableSpotNumber"],
+  "notification": {
+    "attributes": ["availableSpotNumber", "occupiedSpotNumber"],
+    "format": "normalized",
+    "endpoint": {
+      "uri": "http://quantumleap:8668/v2/notify",
+      "accept": "application/json"
+    }
+  }
+}'
+
+sleep 0.5
+
+#ElectricVehicleChargingStation
+curl --location --request POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
+--header 'NGSILD-Tenant: openiot' \
+--header 'Content-Type: application/json' \
+--header 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+--data-raw '{
+  "description": "Notify me if distanceUltrasonic of ElectricVehicleChargingStation has changed",
+  "type": "Subscription",
+  "entities": [{"type": "Device"}],
+  "watchedAttributes": ["distanceUltrasonic"],
+  "notification": {
+    "attributes": ["distanceUltrasonic", "status", "levelOfCharging", "remainingTimeForFullCharge"],
+    "format": "normalized",
+    "endpoint": {
+      "uri": "http://quantumleap:8668/v2/notify",
+      "accept": "application/json"
+    }
+  }
+}'
+
+sleep 0.5
+
+#GreenEnergyGenerator
+curl --location --request POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
+--header 'NGSILD-Tenant: openiot' \
+--header 'Content-Type: application/json' \
+--header 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+--data-raw '{
+  "description": "Notify me if maxEolicPowerGenerated of GreenEnergyGenerator has changed",
+  "type": "Subscription",
+  "entities": [{"type": "GreenEnergyGenerator"}],
+  "watchedAttributes": ["maxEolicPowerGenerated"],
+  "notification": {
+    "attributes": ["maxEolicPowerGenerated"],
+    "format": "normalized",
+    "endpoint": {
+      "uri": "http://quantumleap:8668/v2/notify",
+      "accept": "application/json"
+    }
+  }
+}'
+
+sleep 0.5
+
+#EnergyConsumer
+curl --location --request POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
+--header 'NGSILD-Tenant: openiot' \
+--header 'Content-Type: application/json' \
+--header 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+--data-raw '{
+  "description": "Notify me if power (p) of EnergyConsumer has changed",
+  "type": "Subscription",
+  "entities": [{"type": "EnergyConsumer"}],
+  "watchedAttributes": ["p"],
+  "notification": {
+    "attributes": ["p"],
+    "format": "normalized",
+    "endpoint": {
+      "uri": "http://quantumleap:8668/v2/notify",
+      "accept": "application/json"
+    }
+  }
+}'
+
+sleep 0.5
+
+#WeatherObserved
+curl --location --request POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
+--header 'NGSILD-Tenant: openiot' \
+--header 'Content-Type: application/json' \
+--header 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+--data-raw '{
+  "description": "Notify me if temperature of WeatherObserved has changed",
+  "type": "Subscription",
+  "entities": [{"type": "WeatherObserved"}],
+  "watchedAttributes": ["temperature"],
+  "notification": {
+    "attributes": ["temperature", "relativeHumidity", "feelLikesTemperature"],
+    "format": "normalized",
+    "endpoint": {
+      "uri": "http://quantumleap:8668/v2/notify",
+      "accept": "application/json"
+    }
+  }
+}'
 
 echo -e " \033[1;32mLoading data is done\033[0m"
