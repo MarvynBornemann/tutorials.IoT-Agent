@@ -7,7 +7,6 @@
 
 set -e
 
-SCORPIO="http://scorpio:9090/scorpio/v1/info/"
 ORION="http://orion:1026/version"
 IOT_AGENT="http://iot-agent:4041/version"
 CONTEXT="http://context/ngsi-context.jsonld"
@@ -19,7 +18,7 @@ fi
 
 if (( $# < 1 )); then
 	echo "Illegal number of parameters"
-	echo "usage: services [create|orion|scorpio|stop]"
+	echo "usage: services [create|orion|stop]"
 	exit 1
 fi
 
@@ -48,24 +47,6 @@ waitForOrion () {
 		echo -e "\nContext Broker HTTP state: ${response} (waiting for 200)"
 		pause 20
 		getHeartbeat "${ORION}"
-	done
-}
-
-waitForScorpio () {
-	echo -e "\n⏳ Waiting for \033[1;34mScorpio\033[0m to respond\n"
-	getHeartbeat "${SCORPIO}"
-	while [ "${response}" -eq 000 ]
-	do
-		echo -e "Context Broker HTTP state: ${response} (waiting for 500)"
-		pause 60
-		getHeartbeat "${SCORPIO}"
-	done
-	echo -e "\n⏳ Waiting for all \033[1;34mScorpio\033[0m services to be fully available\n"
-	while [ "$response" -eq 500 ]
-	do
-		echo -e "Context Broker HTTP state: ${response} (waiting for 200)"
-		pause 60
-		getHeartbeat "${SCORPIO}"
 	done
 }
 
@@ -144,7 +125,7 @@ addIoTDatabaseIndex () {
 	printf "Adding appropriate \033[1mMongoDB\033[0m indexes for \033[1;36mIoT-Agent\033[0m  ..."
 	docker exec  db-mongo mongo --eval '
 	conn = new Mongo();
-	db = conn.getDB("iotagentul");
+	db = conn.getDB("iotagentjson");
 	db.createCollection("devices");
 	db.devices.createIndex({"_id.service": 1, "_id.id": 1, "_id.type": 1});
 	db.devices.createIndex({"_id.type": 1});
@@ -159,7 +140,6 @@ stoppingContainers () {
 	echo "Stopping containers"
 	${dockerCmd} -f docker-compose/orion-ld.yml down -v --remove-orphans
 	${dockerCmd} -f docker-compose/orion-ld_without_grafana.yml down -v --remove-orphans
-	${dockerCmd} -f docker-compose/scorpio-aaio.yml down -v --remove-orphans
 }
 
 displayServices () {
@@ -168,27 +148,49 @@ displayServices () {
 	echo ""
 }
 
-backupGrafana () {
+grafanaBackup () {
 	echo "Backup Grafana"
 	docker run -v grafana-db:/volume --rm --log-driver none loomchild/volume-backup backup - > backups/backup.tar.bz2
 }
 
-restoreGrafana () {
+grafanaRestore () {
 	echo "Restore Grafana"
 	cat backups/backup.tar.bz2 | docker run -i -v grafana-db:/volume --rm loomchild/volume-backup restore -
 }
 
+mongoDump () {
+	echo "Dump mongo-db"
+	#version1
+	docker exec db-mongo sh -c 'mongodump --archive' > backups/db.dump
+
+	#version2
+	#docker exec -i db-mongo /usr/bin/mongodump --out /dump
+	#docker cp db-mongo:/dump backups/dump
+}
+
+mongoRestore () {
+	echo "Restore mongo-db"
+	#version1
+	docker exec -i db-mongo sh -c 'mongorestore --archive' < backups/db.dump
+
+	#version2
+	#docker cp backups/dump db-mongo:/dump
+	#docker exec -i db-mongo /usr/bin/mongorestore /dump
+}
+
+
+
 command="$1"
 case "${command}" in
 	"help")
-		echo "usage: services [create|orion|scorpio|stop]"
+		echo "usage: services [create|orion|stop]"
 		;;
 	"orion")
 		export $(cat .env | grep "#" -v)
 		stoppingContainers
 		echo -e "Starting containers:  \033[1;34mOrion\033[0m, \033[1;36mIoT-Agent\033[0m, \033[1mTutorial\033[0m, a linked data \033[1mContext\033[0m and a \033[1mMongoDB\033[0m database."
 		echo -e "- \033[1;34mOrion\033[0m is the context broker"
-		echo -e "- \033[1;36mIoT-Agent\033[0m is configured for the UltraLight Protocol"
+		echo -e "- \033[1;36mIoT-Agent\033[0m is configured for the Json Protocol"
 		echo -e "- \033[1mTutorial\033[0m acts as a series of dummy IoT Sensors over HTTP"
 		echo ""
 		${dockerCmd} -f docker-compose/orion-ld.yml up -d --remove-orphans
@@ -201,12 +203,35 @@ case "${command}" in
 		loadData
 		waitForIoTAgent
 		;;
+	"mongoDump")
+		mongoDump
+		;;
+	"orion+mongoRestore")
+		export $(cat .env | grep "#" -v)
+		stoppingContainers
+		echo -e "Starting containers:  \033[1;34mOrion\033[0m, \033[1;36mIoT-Agent\033[0m, \033[1mTutorial\033[0m, a linked data \033[1mContext\033[0m and a \033[1mMongoDB\033[0m database."
+		echo -e "- \033[1;34mOrion\033[0m is the context broker"
+		echo -e "- \033[1;36mIoT-Agent\033[0m is configured for the Json Protocol"
+		echo -e "- \033[1mTutorial\033[0m acts as a series of dummy IoT Sensors over HTTP"
+		echo ""
+		${dockerCmd} -f docker-compose/orion-ld.yml up -d --remove-orphans
+		waitForMongo
+		mongoRestore
+		displayServices fiware
+		waitForOrion
+		export CONTEXT_BROKER=orion:1026
+		waitForIoTAgent
+		;;
+	"stop")
+		export $(cat .env | grep "#" -v)
+		stoppingContainers
+		;;
 	"orion-without-grafana")
 		export $(cat .env | grep "#" -v)
 		stoppingContainers
 		echo -e "Starting containers:  \033[1;34mOrion\033[0m, \033[1;36mIoT-Agent\033[0m, \033[1mTutorial\033[0m, a linked data \033[1mContext\033[0m and a \033[1mMongoDB\033[0m database."
 		echo -e "- \033[1;34mOrion\033[0m is the context broker"
-		echo -e "- \033[1;36mIoT-Agent\033[0m is configured for the UltraLight Protocol"
+		echo -e "- \033[1;36mIoT-Agent\033[0m is configured for the Json Protocol"
 		echo -e "- \033[1mTutorial\033[0m acts as a series of dummy IoT Sensors over HTTP"
 		echo ""
 		${dockerCmd} -f docker-compose/orion-ld_without_grafana.yml up -d --remove-orphans
@@ -219,53 +244,35 @@ case "${command}" in
 		loadData_without_grafana
 		waitForIoTAgent
 		;;
-	"scorpio")
+	"stop+grafanaBackup")
 		export $(cat .env | grep "#" -v)
-		stoppingContainers
-		echo -e "Starting containers:  \033[1;34mScorpio\033[0m, \033[1mKafka\033[0m, \033[1mZookeeper\033[0m and a \033[1mPostgres\033[0m database, \033[1;36mIoT-Agent\033[0m, \033[1mTutorial\033[0m, a linked data \033[1mContext\033[0m and a \033[1mMongoDB\033[0m database."
-		echo -e "- \033[1;34mScorpio\033[0m is the context broker"
-		echo -e "- \033[1;36mIoT-Agent\033[0m is configured for the UltraLight Protocol"
-		echo -e "- \033[1mTutorial\033[0m acts as a series of dummy IoT Sensors over HTTP"
-		echo ""
-		${dockerCmd} -f docker-compose/scorpio-aaio.yml up -d --remove-orphans
-		waitForMongo
-		addIoTDatabaseIndex
-		displayServices fiware
-		waitForScorpio
-		export CONTEXT_BROKER=scorpio:9090
-		loadData
-		waitForIoTAgent
-		;;
-	"stop-backup")
-		export $(cat .env | grep "#" -v)
-		backupGrafana
+		grafanaBackup
 		stoppingContainers
 		;;
-	"stop")
-		export $(cat .env | grep "#" -v)
-		stoppingContainers
+	"grafanaBackup")
+		grafanaBackup
 		;;
-	"backup")
-		backupGrafana
-		;;
-	"restore")
+	"grafanaRestore")
 		docker volume create grafana-db
-		restoreGrafana
+		grafanaRestore
 		;;
 	"start")
 		export $(cat .env | grep "#" -v)
 		./services orion $2
+		;;
+	"startOnFair")
+		export $(cat .env | grep "#" -v)
+		./services orion+mongoRestore $2
 		;;
 	"create")
 		export $(cat .env | grep "#" -v)
 		echo "Pulling Docker images"
 		docker pull curlimages/curl
 		${dockerCmd} -f docker-compose/orion-ld.yml pull
-		${dockerCmd} -f docker-compose/scorpio-aaio.yml pull
 		;;
 	*)
 		echo "Command not Found."
-		echo "usage: services [create|orion|scorpio|stop]"
+		echo "usage: services [create|orion|stop]"
 		exit 127;
 		;;
 esac
