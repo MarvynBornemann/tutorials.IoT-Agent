@@ -139,6 +139,7 @@ addIoTDatabaseIndex () {
 stoppingContainers () {
 	echo "Stopping containers"
 	${dockerCmd} -f docker-compose/orion-ld.yml down -v --remove-orphans
+	${dockerCmd} -f docker-compose/orion-ld_mongoRestore.yml down -v --remove-orphans
 	${dockerCmd} -f docker-compose/orion-ld_without_grafana.yml down -v --remove-orphans
 }
 
@@ -214,9 +215,8 @@ case "${command}" in
 		echo -e "- \033[1;36mIoT-Agent\033[0m is configured for the Json Protocol"
 		echo -e "- \033[1mTutorial\033[0m acts as a series of dummy IoT Sensors over HTTP"
 		echo ""
-		${dockerCmd} -f docker-compose/orion-ld.yml up -d --remove-orphans
+		${dockerCmd} -f docker-compose/orion-ld_mongoRestore.yml up -d --remove-orphans
 		waitForMongo
-		mongoRestore
 		displayServices fiware
 		waitForOrion
 		export CONTEXT_BROKER=orion:1026
