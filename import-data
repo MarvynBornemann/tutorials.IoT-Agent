@@ -75,6 +75,14 @@ curl --location --request POST 'http://orion:1026/ngsi-ld/v1/entityOperations/cr
             "type": "Property",
             "value": ["Wind_Energy"]
         }
+    },
+    {
+        "id": "urn:ngsi-ld:Building:Dokk1",
+        "type": "Building",
+        "category": {
+            "type": "Property",
+            "value": ["Dokk1"]
+        }
     }
 ]
 '
@@ -880,7 +888,7 @@ curl --location --request POST 'http://iot-agent:4041/iot/devices' \
     ]
 }'
 
-sleep 0.5
+sleep 5
 
 #Register Services
 curl --location --request POST 'http://iot-agent:4041/iot/services' \
@@ -901,29 +909,6 @@ curl --location --request POST 'http://iot-agent:4041/iot/services' \
 sleep 5
 
 #----------------Subscriptions-------------------------------------------------------
-
-#Impress (weight)
-curl --location --request POST 'http://orion:1026/ngsi-ld/v1/subscriptions/' \
---header 'NGSILD-Tenant: openiot' \
---header 'Content-Type: application/json' \
---header 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
---data-raw '{
-  "description": "Notify me of all weight changes",
-  "type": "Subscription",
-  "entities": [{"type": "Device"}],
-  "watchedAttributes": ["weight"],
-  "notification": {
-    "attributes": ["weight", "weightClass", "price"],
-    "format": "normalized",
-    "endpoint": {
-      "uri": "http://quantumleap:8668/v2/notify",
-      "accept": "application/json"
-    }
-  }
-}'
-
-sleep 0.5
-
 #ParkingSpot
 curl --location --request POST 'http://orion:1026/ngsi-ld/v1/subscriptions/' \
 --header 'NGSILD-Tenant: openiot' \
@@ -944,7 +929,7 @@ curl --location --request POST 'http://orion:1026/ngsi-ld/v1/subscriptions/' \
   }
 }'
 
-sleep 0.5
+sleep 1
 
 #OffStreetParking
 curl --location --request POST 'http://orion:1026/ngsi-ld/v1/subscriptions/' \
@@ -957,7 +942,7 @@ curl --location --request POST 'http://orion:1026/ngsi-ld/v1/subscriptions/' \
   "entities": [{"type": "OffStreetParking"}],
   "watchedAttributes": ["availableSpotNumber"],
   "notification": {
-    "attributes": ["availableSpotNumber", "occupiedSpotNumber"],
+    "attributes": ["availableSpotNumber", "occupiedSpotNumber", "totalSpotNumber"],
     "format": "normalized",
     "endpoint": {
       "uri": "http://quantumleap:8668/v2/notify",
@@ -966,7 +951,7 @@ curl --location --request POST 'http://orion:1026/ngsi-ld/v1/subscriptions/' \
   }
 }'
 
-sleep 0.5
+sleep 1
 
 #ElectricVehicleChargingStation
 curl --location --request POST 'http://orion:1026/ngsi-ld/v1/subscriptions/' \
@@ -988,7 +973,7 @@ curl --location --request POST 'http://orion:1026/ngsi-ld/v1/subscriptions/' \
   }
 }'
 
-sleep 0.5
+sleep 1
 
 #GreenEnergyGenerator
 curl --location --request POST 'http://orion:1026/ngsi-ld/v1/subscriptions/' \
@@ -1010,7 +995,7 @@ curl --location --request POST 'http://orion:1026/ngsi-ld/v1/subscriptions/' \
   }
 }'
 
-sleep 0.5
+sleep 1
 
 #EnergyConsumer
 curl --location --request POST 'http://orion:1026/ngsi-ld/v1/subscriptions/' \
@@ -1032,7 +1017,7 @@ curl --location --request POST 'http://orion:1026/ngsi-ld/v1/subscriptions/' \
   }
 }'
 
-sleep 0.5
+sleep 1
 
 #WeatherObserved
 curl --location --request POST 'http://orion:1026/ngsi-ld/v1/subscriptions/' \
@@ -1046,6 +1031,28 @@ curl --location --request POST 'http://orion:1026/ngsi-ld/v1/subscriptions/' \
   "watchedAttributes": ["temperature"],
   "notification": {
     "attributes": ["temperature", "relativeHumidity", "feelLikesTemperature"],
+    "format": "normalized",
+    "endpoint": {
+      "uri": "http://quantumleap:8668/v2/notify",
+      "accept": "application/json"
+    }
+  }
+}'
+
+sleep 1
+
+#Impress (weight)
+curl --location --request POST 'http://orion:1026/ngsi-ld/v1/subscriptions/' \
+--header 'NGSILD-Tenant: openiot' \
+--header 'Content-Type: application/json' \
+--header 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+--data-raw '{
+  "description": "Notify me of all weight changes",
+  "type": "Subscription",
+  "entities": [{"type": "Device"}],
+  "watchedAttributes": ["weight"],
+  "notification": {
+    "attributes": ["weight", "weightClass", "price"],
     "format": "normalized",
     "endpoint": {
       "uri": "http://quantumleap:8668/v2/notify",

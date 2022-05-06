@@ -155,6 +155,17 @@ services:
     networks:
       - default
 
+  #Redis
+  redis:
+    image: redis:6.2.3
+    hostname: redis
+    container_name: db-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    networks:
+      - default
+
   #Quantumleap database setup
   quantumleap-db-setup:
     image: orchestracities/quantumleap-pg-init
@@ -180,6 +191,7 @@ services:
     depends_on:
       - timescale
       - orion
+      - redis
     networks:
       - default
     ports:
@@ -193,7 +205,9 @@ services:
       - POSTGRES_DB_PASS=*
       - POSTGRES_USE_SSL=False
       - USE_GEOCODING=False
-      - CACHE_QUERIES=False
+      - CACHE_QUERIES=True
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
       - LOGLEVEL=DEBUG
     healthcheck:
       test: curl --fail -s http://quantumleap:${QUANTUMLEAP_PORT}/version || exit 1
@@ -212,7 +226,7 @@ services:
       - "${GRAFANA_PORT}:${GRAFANA_PORT}" # localhost:3000
     environment:
       - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-worldmap-panel
-      - GF_AUTH_DISABLE_LOGIN_FORM=true
+      - GF_AUTH_DISABLE_LOGIN_FORM=false
       - GF_AUTH_ANONYMOUS_ENABLED=true
       - GF_AUTH_ANONYMOUS_ORG_NAME=Main Org.
     volumes:
