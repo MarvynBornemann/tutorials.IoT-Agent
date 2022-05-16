@@ -47,8 +47,6 @@ services:
     ports:
       - "${ORION_LD_PORT}:${ORION_LD_PORT}" # localhost:1026
     command: -dbhost mongo-db -logLevel DEBUG -forwarding
-    #environment:
-    #  - ORIONLD_MULTI_SERVICE=TRUE
     healthcheck:
       test: curl --fail -s http://orion:${ORION_LD_PORT}/version || exit 1
       interval: 5s

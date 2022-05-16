@@ -23,25 +23,30 @@ services:
     image: httpd:alpine
     hostname: context
     container_name: fiware-ld-context
+    restart: always
     ports:
-        - "3004:80"
+      - "3004:80"
     volumes:
-        - ../data-models:/usr/local/apache2/htdocs/
+      - ../data-models:/usr/local/apache2/htdocs/
+    networks:
+      - default
 
   # Orion is the context broker
   orion:
     image: marcdespland/orion-ld:FIWARE_8.0_arm64
     hostname: orion
     container_name: fiware-orion
+    restart: always
     depends_on:
       - mongo-db
+      - ld-context
     networks:
       - default
     expose:
       - "${ORION_LD_PORT}"
     ports:
       - "${ORION_LD_PORT}:${ORION_LD_PORT}" # localhost:1026
-    command: -dbhost mongo-db -logLevel DEBUG -forwarding #-corsOrigin _ALL
+    command: -dbhost mongo-db -logLevel DEBUG -forwarding
     healthcheck:
       test: curl --fail -s http://orion:${ORION_LD_PORT}/version || exit 1
       interval: 5s
@@ -99,14 +104,19 @@ services:
     image: mongo:${MONGO_DB_VERSION}
     hostname: mongo-db
     container_name: db-mongo
+    restart: always
     expose:
       - "${MONGO_DB_PORT}"
     ports:
       - "${MONGO_DB_PORT}:${MONGO_DB_PORT}" # localhost:27017
+    environment:
+      - MONGO_INITDB_DATABASE=/docker-entrypoint-initdb.d/mongoRestore.sh
     networks:
       - default
     volumes:
       - mongo-db:/data
+      - ../backups/db.dump:/backups/db.dump
+      - ../mongoRestore/mongoRestore.sh:/docker-entrypoint-initdb.d/mongoRestore.sh
     healthcheck:
       test: |
         host=`hostname --ip-address || echo '127.0.0.1'`; 
