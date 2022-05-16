@@ -1,3 +1,3 @@
 #!/bin/sh
 cd /home/ubuntu/tutorials.IoT-Agent/
-./services orion-without-grafana 2
+docker-compose -f docker-compose/mosquitto.yml up -d --remove-orphans
