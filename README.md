@@ -70,8 +70,10 @@ docker volume create grafana-db
 ```
 2. Open Grafana in a browser with ```http://localhost:3000/```.
 3. Configure the data source: Go to ```Configuration``` -> ```Data Sources``` -> ```Add Data Source```. Select a ```PostgreSQL``` data source. Fill in the following:
-|Name:        |```TSDB```           |
+
+|             |Content              |
 |-------------|---------------------|
+|Name:        |```TSDB```           |
 |Host:        |```timescale:5432``` |
 |Database:    |```quantumleap```    |
 |User:        |```quantumleap```    |
